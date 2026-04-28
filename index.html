@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grade 4 CAASPP Practice — ELA + Math</title>
+<style>
+  :root {
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --ink: #1a2332;
+    --muted: #5b6779;
+    --line: #e3e8f0;
+    --accent: #2563eb;
+    --accent-dark: #1e40af;
+    --good: #16a34a;
+    --bad: #dc2626;
+    --warn: #d97706;
+    --soft: #eef4ff;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.55;
+    font-size: 16px;
+  }
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+  }
+  header.bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    position: sticky;
+    top: 12px;
+    z-index: 10;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  header.bar .title { font-weight: 700; font-size: 16px; }
+  header.bar .meta { display: flex; gap: 18px; align-items: center; font-size: 14px; color: var(--muted); }
+  .meta .pill {
+    background: var(--soft);
+    color: var(--accent-dark);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .meta .pill.timer { background: #fff7ed; color: #b45309; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 28px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  h1 { font-size: 26px; margin: 0 0 8px; }
+  h2 { font-size: 20px; margin: 0 0 12px; }
+  h3 { font-size: 17px; margin: 24px 0 10px; }
+  p { margin: 0 0 12px; }
+  .muted { color: var(--muted); font-size: 14px; }
+  .btn {
+    display: inline-block;
+    padding: 11px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-dark); }
+  .btn-ghost { background: transparent; color: var(--accent); border-color: var(--line); }
+  .btn-ghost:hover { background: var(--soft); }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  .choice-grid {
+    display: grid;
+    gap: 10px;
+    margin: 18px 0 6px;
+  }
+  .choice {
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    background: white;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: all 0.12s;
+    font-size: 15px;
+  }
+  .choice:hover { border-color: var(--accent); background: var(--soft); }
+  .choice.selected { border-color: var(--accent); background: var(--soft); }
+  .choice .letter {
+    background: var(--soft);
+    color: var(--accent-dark);
+    font-weight: 700;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .choice.selected .letter { background: var(--accent); color: white; }
+  .choice.correct-rev { border-color: var(--good); background: #f0fdf4; }
+  .choice.wrong-rev { border-color: var(--bad); background: #fef2f2; }
+  .choice.correct-rev .letter { background: var(--good); color: white; }
+  .choice.wrong-rev .letter { background: var(--bad); color: white; }
+  .passage {
+    background: #fafbff;
+    border-left: 3px solid var(--accent);
+    padding: 18px 22px;
+    border-radius: 6px;
+    margin: 0 0 18px;
+    font-size: 15px;
+    max-height: 360px;
+    overflow-y: auto;
+  }
+  .passage h4 { margin: 0 0 10px; font-size: 16px; }
+  .passage p { margin: 0 0 10px; }
+  .passage p:last-child { margin: 0; }
+  textarea, input.numeric {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    background: white;
+    margin-top: 12px;
+  }
+  input.numeric { max-width: 220px; font-size: 18px; font-variant-numeric: tabular-nums; }
+  textarea { min-height: 120px; resize: vertical; }
+  textarea:focus, input.numeric:focus { outline: none; border-color: var(--accent); }
+  .qmeta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .qmeta .domain {
+    background: #f1f5f9;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    color: #475569;
+  }
+  .qprogress {
+    height: 6px;
+    background: var(--line);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 18px;
+  }
+  .qprogress > div { height: 100%; background: var(--accent); transition: width 0.3s; }
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+  .badge.ms { background: #fef3c7; color: #92400e; }
+  .badge.ni { background: #dbeafe; color: #1e3a8a; }
+  .badge.cr { background: #fce7f3; color: #9d174d; }
+  .badge.eb { background: #e9d5ff; color: #6b21a8; }
+  .badge.mc { background: #d1fae5; color: #065f46; }
+  .home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .home-card {
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: white;
+  }
+  .home-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37,99,235,0.1); }
+  .home-card .emoji { font-size: 32px; }
+  .home-card h3 { margin: 8px 0 4px; }
+  .home-card .summary { font-size: 13px; color: var(--muted); }
+  .score-big {
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--accent-dark);
+    line-height: 1.1;
+    margin: 6px 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .stat {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stat .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
+  .stat .value { font-size: 22px; font-weight: 700; color: var(--ink); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  table.breakdown {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+  table.breakdown th, table.breakdown td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  table.breakdown th { background: #f8fafc; font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+  table.breakdown td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .review-q {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .review-q .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .review-q .qtext { font-weight: 500; margin: 4px 0 8px; font-size: 15px; }
+  .review-q .ans { font-size: 14px; }
+  .review-q .ans .label { color: var(--muted); }
+  .review-q .ans.right .label { color: var(--good); }
+  .review-q .ans.wrong .label { color: var(--bad); }
+  .review-q .explain {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--soft);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .history-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto auto;
+    gap: 12px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+    align-items: center;
+  }
+  .history-row.head { font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .history-row .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .delete-link { color: var(--muted); font-size: 12px; cursor: pointer; text-decoration: underline; }
+  .delete-link:hover { color: var(--bad); }
+  .rubric {
+    background: #fffbeb;
+    border-left: 3px solid var(--warn);
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+  .rubric h4 { margin: 0 0 6px; font-size: 14px; color: #92400e; }
+  .self-score {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .self-score button {
+    flex: 1;
+    padding: 8px;
+    border: 1.5px solid var(--line);
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+  }
+  .self-score button:hover { border-color: var(--accent); background: var(--soft); }
+  .self-score button.selected { border-color: var(--accent); background: var(--accent); color: white; }
+  .hide { display: none !important; }
+  hr { border: none; border-top: 1px solid var(--line); margin: 24px 0; }
+  .note { font-size: 13px; color: var(--muted); font-style: italic; }
+  @media (max-width: 600px) {
+    .home-grid { grid-template-columns: 1fr; }
+    .stat-grid { grid-template-columns: 1fr 1fr; }
+    .card { padding: 20px 18px; }
+    header.bar { padding: 12px 14px; }
+    header.bar .meta { gap: 10px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="bar">
+  <div class="title" id="barTitle">Grade 4 CAASPP Practice</div>
+  <div class="meta" id="barMeta"></div>
+</header>
+
+<!-- HOME SCREEN -->
+<div id="home" class="card">
+  <h1>Grade 4 CAASPP Practice Test</h1>
+  <p class="muted">Mirrors the LAUSD spring Smarter Balanced format — multiple choice, multi-select, two-part evidence, numeric input, and constructed response. Difficulty is bumped up for an advanced reader/mathematician.</p>
+
+  <div class="home-grid">
+    <div class="home-card" onclick="startSection('ela')">
+      <div class="emoji">📖</div>
+      <h3>ELA — Reading + Writing</h3>
+      <div class="summary">12 questions · 2 passages · ~50 min<br>Vocabulary, inference, evidence, theme, writing</div>
+    </div>
+    <div class="home-card" onclick="startSection('math')">
+      <div class="emoji">🔢</div>
+      <h3>Math</h3>
+      <div class="summary">15 questions · ~55 min<br>Place value, fractions, geometry, multi-step word problems</div>
+    </div>
+  </div>
+
+  <h3>Past attempts</h3>
+  <div id="history"></div>
+
+  <div class="rubric" style="margin-top: 20px;">
+    <h4>How the test works</h4>
+    A timer runs in the top bar. Each question records how long she spent on it. At the end of each section you'll get a score, a topic-by-topic breakdown, and time spent per question — so you can spot which areas need more practice and where she rushed or got stuck. Results save automatically in this browser so you can track progress across multiple attempts.
+  </div>
+</div>
+
+<!-- INSTRUCTIONS SCREEN -->
+<div id="instructions" class="card hide">
+  <h1 id="instTitle"></h1>
+  <div id="instBody"></div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="beginTest()">Start the test</button>
+    <button class="btn btn-ghost" onclick="goHome()">Back</button>
+  </div>
+</div>
+
+<!-- TEST SCREEN -->
+<div id="test" class="card hide">
+  <div class="qprogress"><div id="qbar" style="width:0%"></div></div>
+  <div class="qmeta">
+    <span>Question <span id="qNum">1</span> of <span id="qTotal">1</span></span>
+    <span class="domain" id="qDomain"></span>
+  </div>
+  <div id="qContainer"></div>
+  <div class="nav-row">
+    <button class="btn btn-ghost" id="prevBtn" onclick="prevQ()">← Previous</button>
+    <button class="btn btn-primary" id="nextBtn" onclick="nextQ()">Next →</button>
+  </div>
+</div>
+
+<!-- RESULTS SCREEN -->
+<div id="results" class="card hide">
+  <h1 id="resTitle"></h1>
+  <div class="stat-grid">
+    <div class="stat"><div class="label">Score</div><div class="value" id="resScore">—</div></div>
+    <div class="stat"><div class="label">Accuracy</div><div class="value" id="resAccuracy">—</div></div>
+    <div class="stat"><div class="label">Total time</div><div class="value" id="resTime">—</div></div>
+  </div>
+
+  <h3>By topic</h3>
+  <table class="breakdown" id="domainTable"></table>
+
+  <h3>Time per question</h3>
+  <table class="breakdown" id="timeTable"></table>
+
+  <h3>Question-by-question review</h3>
+  <div id="reviewList"></div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="goHome()">Back to home</button>
+    <button class="btn btn-ghost" onclick="retakeSection()">Retake this section</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ======================= QUESTION BANK =======================
+
+const PASSAGES = {
+  attic: {
+    title: "The Cartographer's Apprentice",
+    body: `<p>The first golden light of dawn slanted through the attic window, illuminating dust motes that danced like miniature dancers in the air. Maren climbed the narrow staircase with deliberate care, her grandmother's keys jangling against her palm. The attic of the old house had always been forbidden territory, but with Grandmother Adela now permanently in the city hospital, someone had to begin sorting through decades of accumulated belongings.</p>
+    <p>She pushed open the heavy oak door, and the smell of aged paper and forgotten lavender enveloped her. Trunks were stacked precariously against the walls, and an enormous rolltop desk dominated the center of the room. But what immediately captured Maren's attention was the curious wooden cabinet beside the desk — a piece she had never seen during any of her previous visits.</p>
+    <p>The cabinet was unremarkable from a distance, but as Maren approached, she noticed intricate carvings covering every surface: tiny rivers, mountains, and cities, etched with such precision that they appeared almost alive. Her grandmother, she recalled with sudden clarity, had once been a renowned cartographer — a maker of maps — before retiring to this quiet town three decades ago.</p>
+    <p>Maren tugged at the cabinet's brass handle. It refused to budge. She tried again, pulling harder, but the cabinet remained obstinately closed. Frustrated, she sank onto a nearby trunk and surveyed the room with a discerning eye. That was when she noticed the small bronze key, no larger than her thumbnail, suspended from a thin cord around the rolltop desk's drawer pull.</p>
+    <p>Her heart quickened. Could this diminutive key possibly fit such an imposing cabinet? With trembling fingers, she lifted the cord over the drawer pull and inserted the key into the cabinet's tiny lock. It turned with a satisfying click, and the doors swung open to reveal hundreds of rolled scrolls, each labeled in her grandmother's elegant handwriting.</p>
+    <p>"Lost places," she whispered, reading one of the labels aloud. "What an extraordinary collection."</p>
+    <p>She unrolled the topmost scroll with reverent caution, and her breath caught. There, sketched in fine ink, was a meticulous map of an island she had never heard of, complete with mountains, forests, and a single mysterious notation in red: <em>"Here, the impossible becomes routine."</em></p>`
+  },
+  octopus: {
+    title: "The Cunning Mimic Octopus",
+    body: `<p>Off the muddy coasts of Indonesia lives one of the ocean's most extraordinary creatures: the mimic octopus. Discovered by scientists only in 1998, this remarkable cephalopod has astonished researchers with its singular ability to impersonate other sea animals. While many octopuses can change color and texture for camouflage, the mimic octopus takes deception to an entirely new level — it can convincingly imitate the appearance and movement of at least fifteen different species.</p>
+    <p>When threatened by a predator, the mimic octopus rapidly assesses its surroundings and selects the most appropriate disguise. If a damselfish appears, the octopus might transform itself into a deadly banded sea snake by burying six of its arms and waving the remaining two in opposite directions. If approached by a different threat, it may flatten its body, undulate along the seafloor, and resemble a venomous flatfish, complete with brown and white striping.</p>
+    <p>Scientists believe this sophisticated mimicry developed because the mimic octopus inhabits open, sandy environments where there are few places to hide. Most octopuses depend on coral reefs or rocky crevices for protection, but this species has evolved a different strategy: rather than hiding from predators, it pretends to be one.</p>
+    <p>Researchers have documented the octopus impersonating sea snakes, lionfish, jellyfish, stingrays, and even seahorses. What is particularly remarkable is that it appears to choose its disguise strategically. Studies have suggested that when chased by territorial damselfish, the mimic octopus reliably impersonates banded sea snakes — the natural predator of damselfish.</p>
+    <p>This selective response indicates a level of cognitive sophistication previously underestimated in invertebrates. The mimic octopus must recognize different threats and recall which disguise is most effective against each. Such behavior pushes against the boundaries of what scientists once believed possible for an animal without a backbone.</p>
+    <p>Despite these incredible abilities, the mimic octopus faces increasing threats from habitat loss and pollution. Conservation efforts have intensified as researchers continue to uncover the depth of this creature's intelligence and ecological importance. The mimic octopus, though small and elusive, may have much more to teach us about the surprising complexity of marine life.</p>`
+  }
+};
+
+const QUESTIONS = {
+  ela: [
+    // Passage 1: literary
+    {
+      id: 'e1', type: 'mc', domain: 'Vocabulary', passage: 'attic',
+      q: 'What does <strong>obstinately</strong> most likely mean as used in paragraph 4 ("the cabinet remained obstinately closed")?',
+      options: [['A','easily'],['B','suddenly'],['C','stubbornly'],['D','gracefully']],
+      correct: 'C',
+      explain: '"Obstinately" means stubbornly or refusing to give way. The cabinet would not open even when Maren pulled harder, so it was being stubborn.'
+    },
+    {
+      id: 'e2', type: 'mc', domain: 'Character & Inference', passage: 'attic',
+      q: 'Which sentence from the passage BEST shows that Maren is curious and observant?',
+      options: [
+        ['A','"Maren climbed the narrow staircase with deliberate care…"'],
+        ['B','"Frustrated, she sank onto a nearby trunk and surveyed the room with a discerning eye."'],
+        ['C','"Her grandmother, she recalled with sudden clarity…"'],
+        ['D','"Maren tugged at the cabinet\'s brass handle."']
+      ],
+      correct: 'B',
+      explain: '"Surveyed the room with a discerning eye" directly shows Maren noticing and judging her surroundings carefully — both curious and observant.'
+    },
+    {
+      id: 'e3', type: 'ms', domain: 'Inference', passage: 'attic',
+      q: 'What can the reader infer about Grandmother Adela? <em>Choose TWO answers.</em>',
+      options: [
+        ['A','She is no longer living in the house'],
+        ['B','She enjoyed gardening'],
+        ['C','She kept maps of unusual places'],
+        ['D','She rarely allowed visitors'],
+        ['E','She sold her cabinet to a stranger']
+      ],
+      correct: ['A','C'],
+      explain: 'A: she is "permanently in the city hospital." C: the cabinet contains scrolls labeled "Lost places" with maps of unfamiliar islands. The other choices are not supported in the text.'
+    },
+    {
+      id: 'e4', type: 'mc', domain: 'Author\'s Craft', passage: 'attic',
+      q: 'The phrase <em>"Here, the impossible becomes routine"</em> most likely creates a sense of:',
+      options: [['A','confusion'],['B','wonder and mystery'],['C','sadness'],['D','urgency']],
+      correct: 'B',
+      explain: 'The phrase suggests a magical, surprising place — the kind of language that builds wonder and mystery for the reader.'
+    },
+    {
+      id: 'e5a', type: 'mc', domain: 'Theme (Part A)', passage: 'attic',
+      q: '<strong>Part A.</strong> Which statement BEST describes the central theme developing in the passage?',
+      options: [
+        ['A','Old houses contain hidden dangers'],
+        ['B','Family secrets can lead to remarkable discoveries'],
+        ['C','Patience is always rewarded'],
+        ['D','Maps are valuable historical objects']
+      ],
+      correct: 'B',
+      explain: 'Maren discovers her grandmother\'s hidden cabinet of secret maps — a family secret leading to a remarkable discovery.'
+    },
+    {
+      id: 'e5b', type: 'mc', domain: 'Theme (Part B)', passage: 'attic',
+      q: '<strong>Part B.</strong> Which detail from the passage BEST supports the answer to Part A?',
+      options: [
+        ['A','The smell of aged paper and forgotten lavender'],
+        ['B','Maren had never seen the cabinet during previous visits'],
+        ['C','The keys jangled against her palm'],
+        ['D','The dust motes danced in the air']
+      ],
+      correct: 'B',
+      explain: 'The cabinet being hidden and unfamiliar — never seen before — is what makes the discovery feel like uncovering a family secret.'
+    },
+    // Passage 2: informational
+    {
+      id: 'e6', type: 'mc', domain: 'Central Idea', passage: 'octopus',
+      q: 'What is the central idea of the passage?',
+      options: [
+        ['A','Octopuses are the most intelligent invertebrates'],
+        ['B','The mimic octopus uses sophisticated disguises that show surprising intelligence'],
+        ['C','All octopuses can change shape to hide from predators'],
+        ['D','Indonesia has the most diverse ocean ecosystems']
+      ],
+      correct: 'B',
+      explain: 'The whole passage focuses on the mimic octopus\'s impressive disguises and what they reveal about its intelligence — the central idea.'
+    },
+    {
+      id: 'e7', type: 'mc', domain: 'Author\'s Purpose', passage: 'octopus',
+      q: 'Why does the author mention that mimic octopuses live in <em>"open, sandy environments"</em>?',
+      options: [
+        ['A','To describe what tourists might see'],
+        ['B','To explain why the octopus needed to evolve mimicry instead of hiding'],
+        ['C','To suggest these places are easy to study'],
+        ['D','To compare Indonesia\'s coast to other regions']
+      ],
+      correct: 'B',
+      explain: 'The author follows up by explaining that without coral or rocks to hide in, the mimic octopus had to evolve a different strategy — disguise.'
+    },
+    {
+      id: 'e8', type: 'ms', domain: 'Evidence', passage: 'octopus',
+      q: 'Which TWO pieces of evidence support the idea that the mimic octopus is unusually intelligent?',
+      options: [
+        ['A','It lives off the coast of Indonesia'],
+        ['B','It chooses different disguises for different predators'],
+        ['C','It was discovered in 1998'],
+        ['D','It seems to use sea snake imitation against damselfish, the snake\'s prey'],
+        ['E','It can swim quickly through sandy water']
+      ],
+      correct: ['B','D'],
+      explain: 'Choosing the right disguise for the threat (B) and using a predator-of-the-predator strategy (D) both show planning and recognition — signs of intelligence.'
+    },
+    {
+      id: 'e9', type: 'mc', domain: 'Vocabulary', passage: 'octopus',
+      q: 'As used in paragraph 4, what does <strong>strategically</strong> most nearly mean?',
+      options: [['A','randomly'],['B','carefully and with a plan'],['C','automatically without thinking'],['D','angrily']],
+      correct: 'B',
+      explain: 'Strategically means with thought and a plan. The passage describes the octopus choosing a disguise based on the predator — that\'s a plan.'
+    },
+    // Constructed response
+    {
+      id: 'e10', type: 'cr', domain: 'Constructed Response', passage: 'octopus',
+      q: 'Using at least TWO details from the passage, explain why scientists were surprised by the behavior of the mimic octopus. Write 2–3 complete sentences.',
+      rubric: [
+        '2 pts — Clearly states why scientists were surprised AND uses at least two specific details from the passage (e.g., it picks the right disguise for each predator; it uses sea snake mimicry against damselfish; this kind of thinking was thought impossible for invertebrates).',
+        '1 pt — Partial: explains the idea but only uses one detail, or uses details without explaining the surprise.',
+        '0 pts — Off-topic or no details from the passage.'
+      ]
+    },
+    // Editing
+    {
+      id: 'e11', type: 'mc', domain: 'Language & Editing',
+      q: 'Which sentence below is correctly punctuated?',
+      options: [
+        ['A','The cabinet which contained scrolls, was carved with intricate maps.'],
+        ['B','The cabinet, which contained scrolls, was carved with intricate maps.'],
+        ['C','The cabinet which contained scrolls was carved, with intricate maps.'],
+        ['D','The cabinet which, contained scrolls, was carved with intricate maps.']
+      ],
+      correct: 'B',
+      explain: '"Which contained scrolls" is a non-restrictive clause — extra information that should be set off by commas on both sides.'
+    },
+    // Writing prompt
+    {
+      id: 'e12', type: 'cr', domain: 'Writing (Brief PT)',
+      q: 'Choose ONE prompt and write a paragraph (5–7 sentences):<br><br><strong>a)</strong> Imagine you are Maren and you have just unrolled the map of the mysterious island. Describe what happens next.<br><strong>b)</strong> Imagine you are a scientist studying the mimic octopus. Write a journal entry describing a day observing one in the wild.',
+      rubric: [
+        '4 pts — Clear topic sentence, 5+ sentences, vivid descriptive language, organized, few/no errors.',
+        '3 pts — Clear idea, mostly organized, some descriptive language, minor errors.',
+        '2 pts — Basic idea but underdeveloped, missing structure, several errors.',
+        '1 pt — Very short or off-topic, many errors.'
+      ]
+    }
+  ],
+
+  math: [
+    {
+      id: 'm1', type: 'mc', domain: 'Place Value',
+      q: 'What is the value of the digit <strong>7</strong> in the number <strong>4,378,512</strong>?',
+      options: [['A','7,000'],['B','70,000'],['C','700,000'],['D','700']],
+      correct: 'B',
+      explain: 'The 7 is in the ten-thousands place, so its value is 7 × 10,000 = 70,000.'
+    },
+    {
+      id: 'm2', type: 'ni', domain: 'Multi-Digit Multiplication',
+      q: 'A school is ordering 28 cases of pencils. Each case contains 144 pencils. How many pencils total?',
+      correct: 4032,
+      explain: '28 × 144 = 4,032. (Tip: 28 × 144 = 28 × 100 + 28 × 44 = 2,800 + 1,232 = 4,032.)'
+    },
+    {
+      id: 'm3', type: 'ni', domain: 'Multi-Digit Division',
+      q: 'Solve: <strong>5,184 ÷ 8 = ?</strong>',
+      correct: 648,
+      explain: '5,184 ÷ 8 = 648. Check: 648 × 8 = 5,184. ✓'
+    },
+    {
+      id: 'm4', type: 'mc', domain: 'Multi-Step Word Problem',
+      q: 'Sofia bakes 12 dozen cookies. She gives ¼ of them to her teacher and packs the rest equally into 9 bags. How many cookies are in each bag?',
+      options: [['A','9'],['B','12'],['C','16'],['D','18']],
+      correct: 'B',
+      explain: '12 dozen = 144 cookies. ¼ of 144 = 36 given away. 144 − 36 = 108. 108 ÷ 9 = 12 cookies per bag.'
+    },
+    {
+      id: 'm5', type: 'ms', domain: 'Factors & Multiples',
+      q: 'Which of the following are <strong>factors of 36</strong>? <em>Choose ALL that apply.</em>',
+      options: [['A','4'],['B','6'],['C','8'],['D','9'],['E','12'],['F','16']],
+      correct: ['A','B','D','E'],
+      explain: 'The factors of 36 are 1, 2, 3, 4, 6, 9, 12, 18, 36. So 4, 6, 9, and 12 are all factors. 8 and 16 do not divide 36 evenly.'
+    },
+    {
+      id: 'm6', type: 'mc', domain: 'Fraction Comparison',
+      q: 'Which symbol makes this true?<br><strong>5/6 ___ 7/9</strong>',
+      options: [['A','>'],['B','<'],['C','='],['D','cannot be determined']],
+      correct: 'A',
+      explain: 'Use a common denominator of 18: 5/6 = 15/18 and 7/9 = 14/18. So 5/6 > 7/9.'
+    },
+    {
+      id: 'm7', type: 'ni', domain: 'Fraction Operations',
+      q: 'Add: <strong>4 5/8 + 2 7/8 = ?</strong><br>Enter your answer as a decimal (for example, 7.5).',
+      correct: 7.5,
+      tolerance: 0.001,
+      explain: '4 + 2 = 6 wholes. 5/8 + 7/8 = 12/8 = 1 4/8 = 1½. So 6 + 1½ = 7½ = 7.5.'
+    },
+    {
+      id: 'm8', type: 'ni', domain: 'Fractions × Whole Numbers',
+      q: 'Compute: <strong>5 × 3/4 = ?</strong><br>Enter your answer as a decimal.',
+      correct: 3.75,
+      tolerance: 0.001,
+      explain: '5 × 3/4 = 15/4 = 3¾ = 3.75.'
+    },
+    {
+      id: 'm9', type: 'mc', domain: 'Decimals & Fractions',
+      q: 'Which decimal is equivalent to <strong>47/100</strong>?',
+      options: [['A','4.7'],['B','0.47'],['C','0.047'],['D','47.0']],
+      correct: 'B',
+      explain: '47 hundredths is written as 0.47.'
+    },
+    {
+      id: 'm10', type: 'mc', domain: 'Area & Perimeter',
+      q: 'A rectangle has length <strong>14 cm</strong> and perimeter <strong>40 cm</strong>. What is its area?',
+      options: [['A','56 sq cm'],['B','84 sq cm'],['C','96 sq cm'],['D','280 sq cm']],
+      correct: 'B',
+      explain: 'Perimeter = 2(L + W) → 40 = 2(14 + W) → 14 + W = 20 → W = 6 cm. Area = L × W = 14 × 6 = 84 sq cm.'
+    },
+    {
+      id: 'm11', type: 'ni', domain: 'Angles',
+      q: 'An angle measures <strong>35°</strong>. What is the measure of its <strong>supplementary</strong> angle (in degrees)?',
+      correct: 145,
+      explain: 'Supplementary angles add to 180°. So 180° − 35° = 145°.'
+    },
+    {
+      id: 'm12', type: 'mc', domain: 'Geometry',
+      q: 'Which statement about a <strong>parallelogram</strong> is ALWAYS true?',
+      options: [
+        ['A','All sides are equal in length'],
+        ['B','All angles are right angles'],
+        ['C','Opposite sides are parallel'],
+        ['D','It has at least one line of symmetry']
+      ],
+      correct: 'C',
+      explain: 'By definition, a parallelogram has two pairs of opposite sides that are parallel. The other properties only apply to special parallelograms (rhombus, rectangle).'
+    },
+    {
+      id: 'm13', type: 'mc', domain: 'Measurement Conversion',
+      q: 'How many minutes are in <strong>4 hours and 25 minutes</strong>?',
+      options: [['A','245'],['B','260'],['C','265'],['D','425']],
+      correct: 'C',
+      explain: '4 hours = 4 × 60 = 240 minutes. 240 + 25 = 265 minutes.'
+    },
+    {
+      id: 'm14', type: 'mc', domain: 'Patterns & Algebraic Thinking',
+      q: 'Look at this pattern: <strong>3, 8, 18, 38, ___</strong>. The rule is "double, then add 2." What is the next number?',
+      options: [['A','56'],['B','76'],['C','78'],['D','80']],
+      correct: 'C',
+      explain: '38 × 2 = 76. 76 + 2 = 78.'
+    },
+    {
+      id: 'm15', type: 'ni', domain: 'Multi-Step Word Problem',
+      q: 'A book fair sold <strong>1,247 books</strong> on Friday and <strong>3 times as many</strong> on Saturday. On Sunday, they sold <strong>856 fewer</strong> books than Saturday. How many books did the fair sell IN TOTAL across the three days?',
+      correct: 7873,
+      explain: 'Friday: 1,247. Saturday: 3 × 1,247 = 3,741. Sunday: 3,741 − 856 = 2,885. Total: 1,247 + 3,741 + 2,885 = 7,873 books.'
+    }
+  ]
+};
+
+// ======================= STATE =======================
+
+let state = {
+  section: null,
+  qIndex: 0,
+  answers: {},          // { qid: answer }
+  qStartTime: 0,        // when current question was first viewed
+  qTimeAccum: {},       // { qid: total ms spent }
+  sectionStart: 0,
+  timerInterval: null
+};
+
+// ======================= NAVIGATION =======================
+
+function goHome() {
+  if (state.timerInterval) { clearInterval(state.timerInterval); state.timerInterval = null; }
+  document.getElementById('home').classList.remove('hide');
+  document.getElementById('instructions').classList.add('hide');
+  document.getElementById('test').classList.add('hide');
+  document.getElementById('results').classList.add('hide');
+  document.getElementById('barTitle').textContent = 'Grade 4 CAASPP Practice';
+  document.getElementById('barMeta').innerHTML = '';
+  renderHistory();
+}
+
+function startSection(section) {
+  state.section = section;
+  state.qIndex = 0;
+  state.answers = {};
+  state.qTimeAccum = {};
+  document.getElementById('home').classList.add('hide');
+  document.getElementById('instructions').classList.remove('hide');
+  if (section === 'ela') {
+    document.getElementById('instTitle').textContent = '📖 ELA — Reading + Writing';
+    document.getElementById('instBody').innerHTML = `
+      <p>You'll read two passages and answer 12 questions. There are multiple-choice, multi-select (pick more than one), two-part evidence questions, and two short writing tasks.</p>
+      <ul>
+        <li><strong>Read each passage carefully.</strong> You can scroll inside the passage box.</li>
+        <li><strong>Answer every question.</strong> You can use Previous to go back.</li>
+        <li>For writing tasks, type your answer in the box. After the test, you'll grade your own writing using the rubric.</li>
+        <li><strong>Recommended time:</strong> about 50 minutes.</li>
+      </ul>
+      <p class="muted">A timer at the top tracks total time and time spent on the current question.</p>
+    `;
+  } else {
+    document.getElementById('instTitle').textContent = '🔢 Math';
+    document.getElementById('instBody').innerHTML = `
+      <p>You'll answer 15 questions covering place value, multiplication, division, fractions, decimals, area & perimeter, angles, geometry, and multi-step word problems.</p>
+      <ul>
+        <li><strong>Some answers are typed in</strong> (numeric input) — enter only the number, no units.</li>
+        <li><strong>Some questions ask you to choose more than one</strong> answer — read carefully.</li>
+        <li>You may use scratch paper. <strong>No calculator.</strong></li>
+        <li><strong>Recommended time:</strong> about 55 minutes.</li>
+      </ul>
+      <p class="muted">A timer at the top tracks total time and time spent on the current question.</p>
+    `;
+  }
+}
+
+function beginTest() {
+  document.getElementById('instructions').classList.add('hide');
+  document.getElementById('test').classList.remove('hide');
+  state.sectionStart = Date.now();
+  state.qStartTime = Date.now();
+  startTimer();
+  renderQuestion();
+}
+
+function startTimer() {
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(() => {
+    const total = Date.now() - state.sectionStart;
+    const cur = Date.now() - state.qStartTime;
+    document.getElementById('barMeta').innerHTML = `
+      <span class="pill">Q ${state.qIndex + 1}/${QUESTIONS[state.section].length}</span>
+      <span class="pill timer">⏱ ${formatTime(cur)} this Q</span>
+      <span class="pill">Total ${formatTime(total)}</span>
+    `;
+  }, 500);
+  // immediate update
+  document.getElementById('barTitle').textContent =
+    state.section === 'ela' ? '📖 ELA' : '🔢 Math';
+}
+
+function formatTime(ms) {
+  const s = Math.floor(ms / 1000);
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${m}:${r.toString().padStart(2,'0')}`;
+}
+
+function recordCurrentTime() {
+  const q = QUESTIONS[state.section][state.qIndex];
+  if (!q) return;
+  const elapsed = Date.now() - state.qStartTime;
+  state.qTimeAccum[q.id] = (state.qTimeAccum[q.id] || 0) + elapsed;
+  state.qStartTime = Date.now();
+}
+
+function renderQuestion() {
+  const qs = QUESTIONS[state.section];
+  const q = qs[state.qIndex];
+  const c = document.getElementById('qContainer');
+
+  document.getElementById('qNum').textContent = state.qIndex + 1;
+  document.getElementById('qTotal').textContent = qs.length;
+  document.getElementById('qDomain').innerHTML = q.domain + typeBadge(q.type);
+  document.getElementById('qbar').style.width = ((state.qIndex + 1) / qs.length * 100) + '%';
+
+  let html = '';
+  if (q.passage) {
+    const p = PASSAGES[q.passage];
+    html += `<div class="passage"><h4>${p.title}</h4>${p.body}</div>`;
+  }
+  html += `<div style="font-size: 16px; margin-bottom: 4px;">${q.q}</div>`;
+
+  const ans = state.answers[q.id];
+
+  if (q.type === 'mc') {
+    html += '<div class="choice-grid">';
+    q.options.forEach(([letter, text]) => {
+      const sel = ans === letter ? ' selected' : '';
+      html += `<div class="choice${sel}" onclick="selectMC('${letter}')"><span class="letter">${letter}</span><span>${text}</span></div>`;
+    });
+    html += '</div>';
+  } else if (q.type === 'ms') {
+    html += '<div class="choice-grid">';
+    q.options.forEach(([letter, text]) => {
+      const isSel = Array.isArray(ans) && ans.includes(letter);
+      html += `<div class="choice${isSel ? ' selected' : ''}" onclick="toggleMS('${letter}')"><span class="letter">${letter}</span><span>${text}</span></div>`;
+    });
+    html += '</div>';
+  } else if (q.type === 'ni') {
+    html += `<input class="numeric" type="text" id="niInput" placeholder="Type your answer" value="${ans !== undefined ? ans : ''}" oninput="updateNumeric(this.value)">`;
+  } else if (q.type === 'cr') {
+    html += `<textarea id="crInput" placeholder="Type your response here..." oninput="updateCR(this.value)">${ans || ''}</textarea>`;
+    html += `<div class="rubric"><h4>You'll self-grade this after the test using a rubric.</h4>Don't worry about it being perfect — focus on showing your thinking with details from the text.</div>`;
+  }
+
+  c.innerHTML = html;
+
+  document.getElementById('prevBtn').style.visibility = state.qIndex === 0 ? 'hidden' : 'visible';
+  document.getElementById('nextBtn').textContent =
+    state.qIndex === qs.length - 1 ? 'Finish ✓' : 'Next →';
+}
+
+function typeBadge(type) {
+  const map = {
+    mc: '<span class="badge mc">multiple choice</span>',
+    ms: '<span class="badge ms">multi-select</span>',
+    ni: '<span class="badge ni">numeric</span>',
+    cr: '<span class="badge cr">writing</span>',
+    eb: '<span class="badge eb">two-part</span>'
+  };
+  return map[type] || '';
+}
+
+function selectMC(letter) {
+  const q = QUESTIONS[state.section][state.qIndex];
+  state.answers[q.id] = letter;
+  renderQuestion();
+}
+
+function toggleMS(letter) {
+  const q = QUESTIONS[state.section][state.qIndex];
+  const cur = state.answers[q.id] || [];
+  if (cur.includes(letter)) {
+    state.answers[q.id] = cur.filter(l => l !== letter);
+  } else {
+    state.answers[q.id] = [...cur, letter];
+  }
+  renderQuestion();
+}
+
+function updateNumeric(val) {
+  const q = QUESTIONS[state.section][state.qIndex];
+  state.answers[q.id] = val;
+}
+
+function updateCR(val) {
+  const q = QUESTIONS[state.section][state.qIndex];
+  state.answers[q.id] = val;
+}
+
+function nextQ() {
+  recordCurrentTime();
+  const qs = QUESTIONS[state.section];
+  if (state.qIndex === qs.length - 1) {
+    finishSection();
+  } else {
+    state.qIndex++;
+    renderQuestion();
+  }
+}
+
+function prevQ() {
+  recordCurrentTime();
+  if (state.qIndex > 0) {
+    state.qIndex--;
+    renderQuestion();
+  }
+}
+
+// ======================= GRADING =======================
+
+function isCorrect(q, ans) {
+  if (ans === undefined || ans === null || ans === '') return false;
+  if (q.type === 'mc') {
+    return ans === q.correct;
+  } else if (q.type === 'ms') {
+    if (!Array.isArray(ans)) return false;
+    if (ans.length !== q.correct.length) return false;
+    return q.correct.every(c => ans.includes(c));
+  } else if (q.type === 'ni') {
+    const num = parseFloat(String(ans).replace(/,/g, ''));
+    if (isNaN(num)) return false;
+    const tol = q.tolerance || 0.0001;
+    return Math.abs(num - q.correct) < tol;
+  }
+  return null; // CR — not auto-graded
+}
+
+function finishSection() {
+  if (state.timerInterval) { clearInterval(state.timerInterval); state.timerInterval = null; }
+  const totalMs = Date.now() - state.sectionStart;
+  const qs = QUESTIONS[state.section];
+
+  let autoCorrect = 0, autoTotal = 0;
+  const domainStats = {};
+  qs.forEach(q => {
+    if (q.type === 'cr') return;
+    autoTotal++;
+    const ok = isCorrect(q, state.answers[q.id]);
+    if (ok) autoCorrect++;
+    if (!domainStats[q.domain]) domainStats[q.domain] = { correct: 0, total: 0 };
+    domainStats[q.domain].total++;
+    if (ok) domainStats[q.domain].correct++;
+  });
+
+  const result = {
+    date: new Date().toISOString(),
+    section: state.section,
+    autoCorrect, autoTotal,
+    totalMs,
+    answers: state.answers,
+    times: state.qTimeAccum,
+    domainStats
+  };
+
+  saveResult(result);
+  renderResults(result);
+}
+
+// ======================= RESULTS UI =======================
+
+function renderResults(r) {
+  document.getElementById('test').classList.add('hide');
+  document.getElementById('results').classList.remove('hide');
+  document.getElementById('resTitle').textContent =
+    r.section === 'ela' ? '📖 ELA Results' : '🔢 Math Results';
+  document.getElementById('resScore').textContent = `${r.autoCorrect}/${r.autoTotal}`;
+  document.getElementById('resAccuracy').textContent =
+    Math.round((r.autoCorrect / r.autoTotal) * 100) + '%';
+  document.getElementById('resTime').textContent = formatTime(r.totalMs);
+
+  // Domain table
+  let dt = '<thead><tr><th>Topic</th><th class="num">Score</th><th class="num">%</th></tr></thead><tbody>';
+  Object.keys(r.domainStats).sort().forEach(d => {
+    const s = r.domainStats[d];
+    const pct = Math.round((s.correct / s.total) * 100);
+    const color = pct >= 80 ? 'var(--good)' : pct >= 50 ? 'var(--warn)' : 'var(--bad)';
+    dt += `<tr><td>${d}</td><td class="num">${s.correct}/${s.total}</td><td class="num" style="color:${color};font-weight:600">${pct}%</td></tr>`;
+  });
+  dt += '</tbody>';
+  document.getElementById('domainTable').innerHTML = dt;
+
+  // Time table
+  const qs = QUESTIONS[r.section];
+  let tt = '<thead><tr><th>Question</th><th>Topic</th><th class="num">Time</th><th class="num">Result</th></tr></thead><tbody>';
+  qs.forEach((q, i) => {
+    const ms = r.times[q.id] || 0;
+    const ok = isCorrect(q, r.answers[q.id]);
+    let mark;
+    if (q.type === 'cr') mark = '<span style="color:var(--muted)">self-grade</span>';
+    else if (ok) mark = '<span style="color:var(--good)">✓</span>';
+    else mark = '<span style="color:var(--bad)">✗</span>';
+    tt += `<tr><td>Q${i+1}</td><td>${q.domain}</td><td class="num">${formatTime(ms)}</td><td class="num">${mark}</td></tr>`;
+  });
+  tt += '</tbody>';
+  document.getElementById('timeTable').innerHTML = tt;
+
+  // Review
+  let rl = '';
+  qs.forEach((q, i) => {
+    const ans = r.answers[q.id];
+    const ok = isCorrect(q, ans);
+    let ansText = formatAnswer(q, ans);
+    let correctText = formatCorrect(q);
+    let cls = q.type === 'cr' ? '' : (ok ? 'right' : 'wrong');
+    let label = q.type === 'cr' ? 'Your answer' : (ok ? '✓ Correct' : '✗ Your answer');
+
+    rl += `<div class="review-q">
+      <div class="top"><span>Q${i+1} · ${q.domain} ${typeBadge(q.type)}</span><span>${formatTime(r.times[q.id] || 0)}</span></div>
+      <div class="qtext">${q.q}</div>
+      <div class="ans ${cls}"><span class="label">${label}:</span> ${ansText || '<em>(blank)</em>'}</div>`;
+    if (q.type !== 'cr' && !ok) {
+      rl += `<div class="ans"><span class="label">Correct:</span> ${correctText}</div>`;
+    }
+    if (q.explain) {
+      rl += `<div class="explain"><strong>Why:</strong> ${q.explain}</div>`;
+    }
+    if (q.rubric) {
+      rl += `<div class="rubric"><h4>Self-grade rubric</h4>` +
+        q.rubric.map(line => `<div>• ${line}</div>`).join('') +
+        `<div class="self-score" data-qid="${q.id}">
+          <button onclick="selfScore('${q.id}', 0)">0</button>
+          <button onclick="selfScore('${q.id}', 1)">1</button>
+          <button onclick="selfScore('${q.id}', 2)">2</button>` +
+          (q.rubric.length >= 4 ? `<button onclick="selfScore('${q.id}', 3)">3</button><button onclick="selfScore('${q.id}', 4)">4</button>` : '') +
+        `</div></div>`;
+    }
+    rl += `</div>`;
+  });
+  document.getElementById('reviewList').innerHTML = rl;
+}
+
+function selfScore(qid, score) {
+  // visual only — could persist if desired
+  const container = document.querySelector(`.self-score[data-qid="${qid}"]`);
+  if (container) {
+    container.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+    container.querySelectorAll('button').forEach(b => {
+      if (b.textContent === String(score)) b.classList.add('selected');
+    });
+  }
+}
+
+function formatAnswer(q, ans) {
+  if (ans === undefined || ans === null || ans === '') return '';
+  if (q.type === 'mc') {
+    const opt = q.options.find(o => o[0] === ans);
+    return opt ? `<strong>${ans}.</strong> ${opt[1]}` : ans;
+  } else if (q.type === 'ms') {
+    if (!Array.isArray(ans)) return '';
+    return ans.map(l => {
+      const opt = q.options.find(o => o[0] === l);
+      return opt ? `<strong>${l}</strong>` : l;
+    }).join(', ');
+  } else if (q.type === 'ni') {
+    return `<strong>${ans}</strong>`;
+  } else if (q.type === 'cr') {
+    return `<div style="margin-top:6px;padding:10px 12px;background:#fafbff;border-radius:6px;white-space:pre-wrap;font-size:14px;">${escapeHtml(ans)}</div>`;
+  }
+  return '';
+}
+
+function formatCorrect(q) {
+  if (q.type === 'mc') {
+    const opt = q.options.find(o => o[0] === q.correct);
+    return opt ? `<strong>${q.correct}.</strong> ${opt[1]}` : q.correct;
+  } else if (q.type === 'ms') {
+    return q.correct.map(l => `<strong>${l}</strong>`).join(', ');
+  } else if (q.type === 'ni') {
+    return `<strong>${q.correct}</strong>`;
+  }
+  return '';
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function retakeSection() {
+  startSection(state.section);
+}
+
+// ======================= HISTORY (localStorage) =======================
+
+const STORAGE_KEY = 'caaspp_g4_practice_history_v1';
+
+function saveResult(r) {
+  const all = loadHistory();
+  all.push(r);
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(all)); }
+  catch (e) { console.warn('Could not save history', e); }
+}
+
+function loadHistory() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) { return []; }
+}
+
+function deleteResult(idx) {
+  if (!confirm('Delete this attempt?')) return;
+  const all = loadHistory();
+  all.splice(idx, 1);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  renderHistory();
+}
+
+function clearAllHistory() {
+  if (!confirm('Clear ALL practice history? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  renderHistory();
+}
+
+function renderHistory() {
+  const c = document.getElementById('history');
+  const all = loadHistory();
+  if (all.length === 0) {
+    c.innerHTML = '<p class="muted">No attempts yet. Take a section above to start tracking progress.</p>';
+    return;
+  }
+  let html = '<div class="history-row head"><span>Date</span><span class="num">Section</span><span class="num">Score</span><span class="num">Time</span><span></span></div>';
+  all.slice().reverse().forEach((r, revIdx) => {
+    const realIdx = all.length - 1 - revIdx;
+    const d = new Date(r.date);
+    const dateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    const pct = Math.round((r.autoCorrect / r.autoTotal) * 100);
+    html += `<div class="history-row">
+      <span>${dateStr}</span>
+      <span class="num">${r.section === 'ela' ? '📖 ELA' : '🔢 Math'}</span>
+      <span class="num"><strong>${r.autoCorrect}/${r.autoTotal}</strong> (${pct}%)</span>
+      <span class="num">${formatTime(r.totalMs)}</span>
+      <span><span class="delete-link" onclick="deleteResult(${realIdx})">delete</span></span>
+    </div>`;
+  });
+  html += `<div style="margin-top:12px;text-align:right;"><span class="delete-link" onclick="clearAllHistory()">clear all history</span></div>`;
+  c.innerHTML = html;
+}
+
+// ======================= INIT =======================
+
+renderHistory();
+</script>
+</body>
+</html>
