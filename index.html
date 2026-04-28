@@ -1105,25 +1105,142 @@ function renderHistory() {
   const c = document.getElementById('history');
   const all = loadHistory();
   if (all.length === 0) {
-    c.innerHTML = '<p class="muted">No attempts yet. Take a section above to start tracking progress.</p>';
+    c.innerHTML = `<p class="muted">No attempts yet. Take a section above to start tracking progress.</p>
+      <div style="margin-top:10px;">
+        <label class="btn btn-ghost" style="cursor:pointer;">
+          Restore from backup file
+          <input type="file" accept=".json" style="display:none;" onchange="restoreJSON(this)">
+        </label>
+      </div>`;
     return;
   }
-  let html = '<div class="history-row head"><span>Date</span><span class="num">Section</span><span class="num">Score</span><span class="num">Time</span><span></span></div>';
+
+  // Progress trends per section
+  const elaAttempts = all.filter(r => r.section === 'ela');
+  const mathAttempts = all.filter(r => r.section === 'math');
+  let trend = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">';
+  [['📖 ELA', elaAttempts], ['🔢 Math', mathAttempts]].forEach(([label, arr]) => {
+    if (arr.length === 0) {
+      trend += `<div class="stat"><div class="label">${label}</div><div class="value" style="font-size:16px;color:var(--muted);">No attempts yet</div></div>`;
+    } else {
+      const last = arr[arr.length - 1];
+      const lastPct = Math.round((last.autoCorrect / last.autoTotal) * 100);
+      const best = Math.max(...arr.map(r => Math.round((r.autoCorrect / r.autoTotal) * 100)));
+      const avg = Math.round(arr.reduce((s,r) => s + (r.autoCorrect/r.autoTotal)*100, 0) / arr.length);
+      trend += `<div class="stat"><div class="label">${label} · ${arr.length} attempt${arr.length>1?'s':''}</div>
+        <div style="font-size:14px;margin-top:6px;color:var(--muted);">
+          Latest <strong style="color:var(--ink);">${lastPct}%</strong> · Best <strong style="color:var(--good);">${best}%</strong> · Avg <strong style="color:var(--ink);">${avg}%</strong>
+        </div></div>`;
+    }
+  });
+  trend += '</div>';
+
+  let html = trend;
+  html += '<div class="history-row head"><span>Date</span><span class="num">Section</span><span class="num">Score</span><span class="num">Time</span><span></span></div>';
   all.slice().reverse().forEach((r, revIdx) => {
     const realIdx = all.length - 1 - revIdx;
     const d = new Date(r.date);
     const dateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     const pct = Math.round((r.autoCorrect / r.autoTotal) * 100);
     html += `<div class="history-row">
-      <span>${dateStr}</span>
+      <span><a href="#" onclick="viewPastAttempt(${realIdx});return false;" style="color:var(--accent);text-decoration:none;font-weight:500;">${dateStr}</a></span>
       <span class="num">${r.section === 'ela' ? '📖 ELA' : '🔢 Math'}</span>
       <span class="num"><strong>${r.autoCorrect}/${r.autoTotal}</strong> (${pct}%)</span>
       <span class="num">${formatTime(r.totalMs)}</span>
       <span><span class="delete-link" onclick="deleteResult(${realIdx})">delete</span></span>
     </div>`;
   });
-  html += `<div style="margin-top:12px;text-align:right;"><span class="delete-link" onclick="clearAllHistory()">clear all history</span></div>`;
+  html += `<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center;">
+    <button class="btn btn-ghost" style="padding:7px 14px;font-size:13px;" onclick="exportCSV()">Download CSV</button>
+    <button class="btn btn-ghost" style="padding:7px 14px;font-size:13px;" onclick="backupJSON()">Backup (JSON)</button>
+    <label class="btn btn-ghost" style="padding:7px 14px;font-size:13px;cursor:pointer;margin:0;">
+      Restore
+      <input type="file" accept=".json" style="display:none;" onchange="restoreJSON(this)">
+    </label>
+    <span class="delete-link" style="margin-left:8px;" onclick="clearAllHistory()">clear all</span>
+  </div>`;
   c.innerHTML = html;
+}
+
+function viewPastAttempt(idx) {
+  const all = loadHistory();
+  const r = all[idx];
+  if (!r) return;
+  state.section = r.section;
+  document.getElementById('home').classList.add('hide');
+  renderResults(r);
+  window.scrollTo(0, 0);
+}
+
+function exportCSV() {
+  const all = loadHistory();
+  if (all.length === 0) { alert('No attempts to export.'); return; }
+  let csv = 'Date,Section,Question,Topic,Type,YourAnswer,Correct,TimeSeconds\n';
+  all.forEach(r => {
+    const date = new Date(r.date).toLocaleString();
+    const qs = QUESTIONS[r.section];
+    qs.forEach((q, i) => {
+      const ans = r.answers[q.id];
+      const ok = isCorrect(q, ans);
+      const time = Math.round((r.times[q.id] || 0) / 1000);
+      let ansStr;
+      if (q.type === 'cr') ansStr = '(written response)';
+      else if (Array.isArray(ans)) ansStr = ans.join('|');
+      else ansStr = (ans === undefined || ans === null) ? '' : String(ans);
+      ansStr = ansStr.replace(/"/g, '""');
+      const okStr = q.type === 'cr' ? 'manual' : (ok ? 'YES' : 'NO');
+      csv += `"${date}","${r.section}","Q${i+1}","${q.domain}","${q.type}","${ansStr}","${okStr}","${time}"\n`;
+    });
+  });
+  downloadFile(csv, 'practice_history.csv', 'text/csv;charset=utf-8');
+}
+
+function backupJSON() {
+  const all = loadHistory();
+  if (all.length === 0) { alert('No attempts to back up.'); return; }
+  const stamp = new Date().toISOString().slice(0,10);
+  downloadFile(JSON.stringify(all, null, 2), `practice_backup_${stamp}.json`, 'application/json');
+}
+
+function restoreJSON(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) throw new Error('File is not a valid backup');
+      const existing = loadHistory();
+      const seen = new Set(existing.map(r => r.date));
+      let added = 0;
+      imported.forEach(r => {
+        if (r && r.date && !seen.has(r.date)) {
+          existing.push(r);
+          added++;
+        }
+      });
+      existing.sort((a,b) => new Date(a.date) - new Date(b.date));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+      alert(`Imported ${added} new attempt${added===1?'':'s'}. (Skipped ${imported.length - added} duplicates.) History now has ${existing.length} total.`);
+      renderHistory();
+    } catch (err) {
+      alert('Could not restore backup: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 100);
 }
 
 // ======================= INIT =======================
